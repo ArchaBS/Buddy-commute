@@ -1,0 +1,49 @@
+/* Make the whole screen available */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Center everything on the screen */
+  .landing-root {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;  /* vertical center */
+    align-items: center;      /* horizontal center */
+    text-align: center;
+    background-color: #ffffff;/*white*/
+  }
+  
+  /* Logo animation only */
+  .landing-logo {
+    width: 180px;
+    height: auto;
+    margin-bottom: 16px;
+    opacity: 0;
+    transform: scale(0.8);
+    animation: logoReveal 1s ease-out forwards;
+  }
+  
+  /* Title appears instantly */
+  .landing-title {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: black;
+    opacity: 1;
+  }
+  
+  /* Animation keyframes for logo */
+  @keyframes logoReveal {
+    0% {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  

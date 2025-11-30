@@ -1,0 +1,103 @@
+<div class="group-container">
+  <!-- Header Section -->
+  <div class="header">
+    <button class="back-btn" (click)="goBack()">
+      <span class="back-icon">←</span> Back
+    </button>
+    <h1>Select a Group</h1>
+    <p class="subtitle">Choose a friend group to send your ride request</p>
+  </div>
+
+  <!-- Search Info 
+  <div class="search-info" *ngIf="pickup && destination">
+    <div class="info-card">
+      <div class="info-item">
+        <span class="label">📍 Pickup:</span>
+        <span class="value">{{ pickup }}</span>
+      </div>
+      <div class="info-item">
+        <span class="label">🎯 Destination:</span>
+        <span class="value">{{ destination }}</span>
+      </div>
+    </div>
+  </div> -->
+
+  <!-- Loading State -->
+  <div class="loading" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading your friend groups...</p>
+  </div>
+
+  <!-- Success Message -->
+  <div class="success-message" *ngIf="successMessage">
+    ✓ {{ successMessage }}
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-message" *ngIf="errorMessage">
+    ✗ {{ errorMessage }}
+  </div>
+
+  <!-- Friend Groups List -->
+  <div class="groups-list" *ngIf="!isLoading">
+    <div class="group-card" *ngFor="let group of friendGroups">
+      <div class="group-header">
+        <div class="group-icon">{{ group.icon }}</div>
+        <div class="group-info">
+          <h2 class="group-name">{{ group.groupName }}</h2>
+          <p class="group-description">{{ group.description }}</p>
+        </div>
+      </div>
+
+      <div class="group-stats">
+        <div class="stat">
+          <span class="stat-icon">👥</span>
+          <span class="stat-value">{{ group.memberCount }} members</span>
+        </div>
+        <div class="stat">
+          <span class="stat-icon">🚗</span>
+          <span class="stat-value">{{ group.activeRides }} active rides</span>
+        </div>
+      </div>
+
+      <!-- ✅ UPDATED MEMBERS SECTION WITH TOGGLE -->
+      <div class="group-members">
+        <p class="members-label">MEMBERS:</p>
+        <div class="members-list">
+          <!-- Show visible members based on expanded state -->
+          <span class="member-tag" *ngFor="let member of getVisibleMembers(group)">
+            {{ member }}
+          </span>
+          
+          <!-- Toggle button - only show if more than 3 members -->
+          <button 
+            class="member-tag more" 
+            *ngIf="group.members.length > 3"
+            (click)="toggleMembers(group.id)"
+          >
+            {{ isGroupExpanded(group.id) ? 'Show less' : '+' + getRemainingCount(group) + ' more' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="group-actions">
+        <button class="btn-secondary" (click)="viewGroupDetails(group)">
+          View Details
+        </button>
+        <button class="btn-send-request" (click)="onSendRequest(group)">
+          Send Request
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!isLoading && friendGroups.length === 0">
+    <div class="empty-icon">📭</div>
+    <h3>No Groups Found</h3>
+    <p>You haven't joined any friend groups yet.</p>
+    <button class="btn-primary" (click)="goToHome()">
+      Go to Home
+    </button>
+  </div>
+</div>

@@ -1,0 +1,42 @@
+<div class="home-container">
+  <div class="header">
+    <div class="logo">
+      <div class="logo-circle"><img src="assets/buddy logo.png" /></div>
+      <span class="logo-text">Buddy Commute</span>
+    </div>
+    <div class="user-section">
+      <span class="welcome-text">Welcome, {{ getUsername() }}!</span>
+      
+      <!-- Notification Button (moved here) -->
+      <button class="notification-btn" (click)="goToNotifications()">
+        <i class="bi bi-bell-fill"></i>
+        <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+      </button>
+       
+      
+      <button class="logout-btn" (click)="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <h1>Welcome to Buddy Commute!</h1>
+    <p>Your carpooling journey starts here.</p>
+    
+    <div class="features">
+      <div class="feature-card" routerLink="/riderequest" style="cursor: pointer;">
+        <h3>🗺️ Find Rides</h3>
+        <p>Search for available rides in your area</p>
+      </div>
+      
+      <div class="feature-card">
+        <h3>🚘 Offer Rides</h3>
+        <p>Share your commute and help others</p>
+      </div>
+      
+      <div class="feature-card">
+        <h3>👥 Connect</h3>
+        <p>Meet new buddies on your route</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,70 @@
+<div class="login-container">
+    <div class="login-card">
+      
+      <!-- Logo -->
+      <div class="logo">
+        <div class="logo-circle"><img src="assets/buddy logo.png" /></div>
+      </div>
+      
+      <h2>Buddy Commute</h2>
+      
+      <form (ngSubmit)="onLogin()">
+        
+        <!-- Username Field -->
+        <div class="form-group">
+          <label>Username</label>
+          <input 
+            type="text" 
+            [(ngModel)]="username"
+            name="username"
+            placeholder="Enter your username"
+            [disabled]="isLoading"
+            required
+          />
+        </div>
+        
+        <!-- Password Field -->
+        <div class="form-group">
+          <label>Password</label>
+          <div class="password-wrapper">
+            <input 
+              [type]="showPassword ? 'text' : 'password'"
+              [(ngModel)]="password"
+              name="password"
+              placeholder="Enter your password"
+              [disabled]="isLoading"
+              class="password-input"
+              required
+            />
+            <button 
+              type="button" 
+              class="eye-button"
+              (click)="togglePassword()"
+            >
+              <i class="bi bi-eye-slash" *ngIf="!showPassword"></i>
+              <i class="bi bi-eye" *ngIf="showPassword"></i>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Login Button -->
+        <button 
+          type="submit" 
+          class="btn-login"
+          [disabled]="isLoading"
+        >
+          {{ isLoading ? 'Logging In...' : 'LOGIN' }}
+        </button>
+        
+      </form>
+      
+      <!-- Sign Up Section -->
+      <div class="signup-section">
+        <p>Don't have an account?</p>
+        <button type="button" class="btn-signup" routerLink="/signup">
+          SIGN UP
+        </button>
+      </div>
+      
+    </div>
+  </div>

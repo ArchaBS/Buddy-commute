@@ -1,0 +1,114 @@
+<div class="group-details-container">
+  
+  <!-- Header -->
+  <div class="header">
+    <button class="back-btn" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i> Back
+    </button>
+    <h1>{{ groupName || 'Loading...' }}</h1>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading group details...</p>
+  </div>
+
+  <!-- Success Message -->
+  <div class="success-message" *ngIf="successMessage">
+    ✓ {{ successMessage }}
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-message" *ngIf="errorMessage">
+    ✗ {{ errorMessage }}
+  </div>
+
+  <!-- Main Content - Only show when NOT loading -->
+  <div *ngIf="!isLoading">
+    
+    <!-- Group Info Card -->
+    <div class="group-info-card">
+      <div class="group-icon">
+        <i class="bi bi-briefcase"></i>
+      </div>
+      <div class="group-info">
+        <h2>{{ groupName }}</h2>
+        <p>{{ groupDescription }}</p>
+        <div class="stats">
+          <span><i class="bi bi-people"></i> {{ members.length }} members</span>
+          <span><i class="bi bi-car-front"></i> {{ activeRides }} active rides</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Member Section -->
+    <div class="add-member-section">
+      <h3>Add New Member</h3>
+      <div class="add-member-form">
+        <input 
+          type="tel" 
+          [(ngModel)]="phoneNumber"
+          name="phoneNumber"
+          placeholder="Enter phone number (e.g., +91 9876543210)"
+          class="phone-input"
+        />
+        <button class="btn-search" (click)="searchMember()" [disabled]="isSearching">
+          {{ isSearching ? 'Searching...' : 'Search' }}
+        </button>
+      </div>
+
+      <!-- Search Result -->
+      <div class="search-result" *ngIf="searchedUser">
+        <div class="user-card">
+          <div class="user-avatar">
+            {{ searchedUser.username.charAt(0).toUpperCase() }}
+          </div>
+          <div class="user-info">
+            <h4>{{ searchedUser.username }}</h4>
+            <p>{{ searchedUser.phone }}</p>
+          </div>
+          <button class="btn-add" (click)="addMember(searchedUser)" [disabled]="isAdding">
+            {{ isAdding ? 'Adding...' : 'Add' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Not Found Message -->
+      <div class="not-found" *ngIf="searchNotFound">
+        <i class="bi bi-exclamation-circle"></i>
+        <p>No user found with this phone number</p>
+      </div>
+    </div>
+
+    <!-- Members List -->
+    <div class="members-section">
+      <h3>Members ({{ members.length }})</h3>
+      
+      <div class="members-list">
+        <div class="member-card" *ngFor="let member of members">
+          <div class="member-avatar">
+            {{ member.username.charAt(0).toUpperCase() }}
+          </div>
+          <div class="member-info">
+            <h4>{{ member.username }}</h4>
+            <p>{{ member.phone }}</p>
+          </div>
+          <button class="btn-remove" (click)="removeMember(member)" *ngIf="!member.isAdmin">
+            <i class="bi bi-trash"></i>
+          </button>
+          <span class="admin-badge" *ngIf="member.isAdmin">Admin</span>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="members.length === 0">
+        <i class="bi bi-people"></i>
+        <p>No members in this group yet</p>
+      </div>
+    </div>
+
+  </div>
+  <!-- End of *ngIf="!isLoading" -->
+
+</div>

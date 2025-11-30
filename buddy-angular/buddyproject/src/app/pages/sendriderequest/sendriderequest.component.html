@@ -1,0 +1,108 @@
+<div class="send-request-container">
+  
+    <!-- Header -->
+    <div class="header">
+      <button class="back-btn" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i> Back
+      </button>
+      <h1>Send Ride Request</h1>
+    </div>
+  
+    <!-- Group Info -->
+    <div class="group-info-card">
+      <div class="group-icon">
+        <i class="bi bi-people-fill"></i>
+      </div>
+      <div class="group-details">
+        <h2>{{ groupName }}</h2>
+        <p>{{ memberCount }} members will receive this request</p>
+      </div>
+    </div>
+  
+    <!-- Ride Request Form -->
+    <div class="request-form-card">
+      <h3>Ride Details</h3>
+      
+      <form (ngSubmit)="onSendRequest()">
+        
+        <!-- Pickup Location -->
+        <div class="form-group">
+          <label>
+            <i class="bi bi-geo-alt-fill"></i>
+            Pickup Location
+          </label>
+          <input 
+            type="text" 
+            [(ngModel)]="pickupLocation"
+            name="pickupLocation"
+            placeholder="Enter pickup location (e.g., Home, Office)"
+            [disabled]="isSending"
+            required
+          />
+        </div>
+        
+        <!-- Destination -->
+        <div class="form-group">
+          <label>
+            <i class="bi bi-flag-fill"></i>
+            Destination
+          </label>
+          <input 
+            type="text" 
+            [(ngModel)]="destination"
+            name="destination"
+            placeholder="Enter destination"
+            [disabled]="isSending"
+            required
+          />
+        </div>
+  
+        <!-- Pickup Time (Optional) -->
+        <div class="form-group">
+          <label>
+            <i class="bi bi-clock-fill"></i>
+            Preferred Time (Optional)
+          </label>
+          <input 
+            type="time" 
+            [(ngModel)]="preferredTime"
+            name="preferredTime"
+            [disabled]="isSending"
+          />
+        </div>
+  
+        <!-- Additional Notes (Optional) -->
+        <div class="form-group">
+          <label>
+            <i class="bi bi-chat-left-text-fill"></i>
+            Additional Notes (Optional)
+          </label>
+          <textarea 
+            [(ngModel)]="notes"
+            name="notes"
+            placeholder="Any additional information..."
+            rows="3"
+            [disabled]="isSending"
+          ></textarea>
+        </div>
+        
+        <!-- Send Button -->
+        <button 
+          type="submit" 
+          class="btn-send"
+          [disabled]="isSending || !pickupLocation || !destination"
+        >
+          <i class="bi bi-send-fill"></i>
+          {{ isSending ? 'Sending Request...' : 'Send Request to Group' }}
+        </button>
+        
+      </form>
+    </div>
+  
+    <!-- Info Box -->
+    <div class="info-box">
+      <i class="bi bi-info-circle-fill"></i>
+      <p>All members of "{{ groupName }}" will be notified about your ride request. They can accept or decline your request.</p>
+    </div>
+  
+  </div>

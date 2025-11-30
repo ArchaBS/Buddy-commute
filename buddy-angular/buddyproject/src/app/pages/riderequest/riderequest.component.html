@@ -1,0 +1,78 @@
+<div class="riderequest-container">
+    <div class="riderequest-card">
+      
+      <!-- Header with Back Button -->
+      <div class="header">
+        <button class="back-button" (click)="goBack()">
+          <i class="bi bi-arrow-left"></i>
+        </button>
+        <h2>Find Rides</h2>
+      </div>
+  
+      <p class="subtitle">Search for available rides in your area</p>
+  
+      <form (ngSubmit)="searchRides()">
+        
+        <!-- Pickup Location Field -->
+        <div class="form-group">
+          <label>
+            <i class="bi bi-geo-alt-fill"></i> Pickup Location
+          </label>
+          <div class="input-with-button">
+            <input 
+              type="text" 
+              [(ngModel)]="pickupLocation"
+              name="pickup"
+              placeholder="Enter your pickup location"
+              required
+            />
+            <button 
+              type="button" 
+              class="location-button" 
+              (click)="useCurrentLocation('pickup')"
+              title="Use current location"
+            >
+              <i class="bi bi-crosshair"></i>
+            </button>
+          </div>
+        </div>
+  
+        <!-- Destination Field -->
+        <div class="form-group">
+          <label>
+            <i class="bi bi-flag-fill"></i> Destination
+          </label>
+          <div class="input-with-button">
+            <input 
+              type="text" 
+              [(ngModel)]="destination"
+              name="destination"
+              placeholder="Enter your destination"
+              required
+            />
+            
+          </div>
+        </div>
+  
+        <!-- Search Button -->
+        <button 
+          type="submit" 
+          class="btn-search"
+          [disabled]="isLoading"
+        >
+          <i class="bi bi-search"></i> 
+          {{ isLoading ? 'Search Rides' : 'Search Rides' }}
+        </button>
+  
+      </form>
+  
+      <!-- Success/Error Messages -->
+      <div class="message success" *ngIf="successMessage">
+        <i class="bi bi-check-circle"></i> {{ successMessage }}
+      </div>
+      <div class="message error" *ngIf="errorMessage">
+        <i class="bi bi-exclamation-circle"></i> {{ errorMessage }}
+      </div>
+  
+    </div>
+  </div>

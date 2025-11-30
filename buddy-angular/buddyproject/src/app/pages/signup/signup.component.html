@@ -1,0 +1,109 @@
+<div class="signup-container">
+  <div class="signup-card">
+    
+    <!-- Logo -->
+    <div class="logo">
+      <div class="logo-circle"><img src="assets/buddy logo.png" /></div>
+    </div>
+    
+    <h2>Join Buddy Commute</h2>
+    
+    <form (ngSubmit)="onSignup()">
+      
+      <!-- Username Field -->
+      <div class="form-group">
+        <label>Username</label>
+        <input 
+          type="text" 
+          [(ngModel)]="username"
+          name="username"
+          placeholder="Choose a username"
+          [disabled]="isLoading"
+          required
+        />
+      </div>
+      
+      <!-- Email Field -->
+      <div class="form-group">
+        <label>Email</label>
+        <input 
+          type="email" 
+          [(ngModel)]="email"
+          name="email"
+          placeholder="Enter your email"
+          [disabled]="isLoading"
+          required
+        />
+      </div>
+      
+      <!-- Password Field -->
+      <div class="form-group">
+        <label>Password</label>
+        <div class="password-wrapper">
+          <input 
+            [type]="showPassword ? 'text' : 'password'"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="Create a password"
+            [disabled]="isLoading"
+            class="password-input"
+            required
+          />
+          <button 
+            type="button" 
+            class="eye-button"
+            (click)="togglePassword()"
+          >
+            <i class="bi bi-eye-slash" *ngIf="!showPassword"></i>
+            <i class="bi bi-eye" *ngIf="showPassword"></i>
+          </button>
+        </div>
+        
+        <!-- Password hint -->
+        <small class="password-hint" *ngIf="password && !isPasswordValid()">
+          ⚠️ Password must be 8+ chars with uppercase, lowercase, number & special char
+        </small>
+        <small class="password-success" *ngIf="password && isPasswordValid()">
+          ✓ Password is strong
+        </small>
+      </div>
+      
+      <!-- Confirm Password Field -->
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input 
+          type="password"
+          [(ngModel)]="confirmPassword"
+          name="confirmPassword"
+          placeholder="Confirm your password"
+          [disabled]="isLoading"
+          required
+        />
+        
+        <!-- Password match indicator -->
+        <small class="password-hint" *ngIf="confirmPassword && !doPasswordsMatch()">
+          ⚠️ Passwords do not match
+        </small>
+        <small class="password-success" *ngIf="confirmPassword && doPasswordsMatch()">
+          ✓ Passwords match
+        </small>
+      </div>
+      
+      <!-- Sign Up Button -->
+      <button 
+        type="submit" 
+        class="btn-signup"
+        [disabled]="isLoading"
+      >
+        {{ isLoading ? 'Signing Up...' : 'SIGN UP' }}
+      </button>
+      
+    </form>
+    
+    <!-- Login Link -->
+    <div class="login-section">
+      <p>Already have an account? <a routerLink="/login">Login here</a></p>
+    </div>
+    
+  </div>
+</div>

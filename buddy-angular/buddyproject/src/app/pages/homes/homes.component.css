@@ -1,0 +1,163 @@
+.home-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0077be, #00a86b);
+  }
+  
+  /* Header */
+  .header {
+    background: white;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .logo-circle {
+    width: 80px;  /* Reduced size */
+    height: 80px; /* Reduced size */
+    background: black;
+    color: white;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: bold;
+    overflow: hidden; /* This is important */
+    padding: 10px; /* Add padding to make logo smaller inside circle */
+  }
+  
+  /* Control the image size inside the circle */
+  .logo-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  } 
+  
+  .logo-text {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .user-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .welcome-text {
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .logout-btn {
+    padding: 10px 20px;
+    background: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.3s;
+  }
+  
+  .logout-btn:hover {
+    background: #cc0000;
+  }
+  
+  /* Content */
+  .content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    text-align: center;
+    color: white;
+  }
+  
+  .content h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .content p {
+    font-size: 20px;
+    margin-bottom: 60px;
+    opacity: 0.9;
+  }
+  
+  /* Features */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+  }
+  
+  .feature-card {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  }
+  
+  .feature-card h3 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 15px;
+  }
+  
+  .feature-card p {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+  }
+  .notification-btn {
+    position: relative;
+    background: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    color: #667eea;
+    transition: transform 0.2s;
+  }
+  
+  .notification-btn:hover {
+    transform: scale(1.1);
+  }
+  
+  .notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #ff4444;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }

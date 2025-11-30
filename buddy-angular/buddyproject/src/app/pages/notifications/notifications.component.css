@@ -1,0 +1,368 @@
+.notifications-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+  }
+  
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 15px;
+    position: relative;
+  }
+  
+  .back-btn {
+    background: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: transform 0.2s;
+  }
+  
+  .back-btn:hover {
+    transform: translateX(-5px);
+  }
+  
+  .header h1 {
+    color: white;
+    margin: 0;
+    font-size: 28px;
+    flex: 1;
+  }
+  
+  .badge {
+    background: #ff4444;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .tab {
+    flex: 1;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .tab:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  
+  .tab.active {
+    background: white;
+    color: #667eea;
+    border-color: white;
+  }
+  
+  .tab i {
+    font-size: 18px;
+  }
+  
+  /* Tab Content */
+  .tab-content {
+    min-height: 400px;
+  }
+  
+  /* Loading */
+  .loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: white;
+  }
+  
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Notifications List */
+  .notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .notification-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+  
+  .notification-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .notification-card.unread {
+    background: #f0f8ff;
+    border-left: 4px solid #667eea;
+  }
+  
+  .notif-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    flex-shrink: 0;
+  }
+  
+  .notif-content {
+    flex: 1;
+  }
+  
+  .notif-message {
+    margin: 0 0 5px 0;
+    color: #333;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  
+  .notif-time {
+    color: #999;
+    font-size: 13px;
+  }
+  
+  .notif-indicator {
+    width: 12px;
+    height: 12px;
+    background: #667eea;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  
+  /* Ride Requests List */
+  .requests-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .request-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .request-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .requester-avatar {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .requester-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .request-time {
+    color: #999;
+    font-size: 13px;
+  }
+  
+  .request-details {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+  }
+  
+  .detail-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+  }
+  
+  .detail-item i {
+    color: #667eea;
+    font-size: 18px;
+  }
+  
+  .detail-item span {
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .arrow {
+    color: #667eea;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .request-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .btn-accept,
+  .btn-decline {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: transform 0.2s;
+  }
+  
+  .btn-accept {
+    background: #00cc66;
+    color: white;
+  }
+  
+  .btn-accept:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 204, 102, 0.3);
+  }
+  
+  .btn-accept:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .btn-decline {
+    background: #ff4444;
+    color: white;
+  }
+  
+  .btn-decline:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 68, 68, 0.3);
+  }
+  
+  .already-responded {
+    text-align: center;
+    padding: 12px;
+    background: #e8f5e9;
+    color: #2e7d32;
+    border-radius: 10px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .already-responded i {
+    font-size: 20px;
+  }
+  
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: white;
+  }
+  
+  .empty-state i {
+    font-size: 80px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+  }
+  
+  .empty-state h3 {
+    margin: 0 0 10px 0;
+    font-size: 24px;
+  }
+  
+  .empty-state p {
+    margin: 0;
+    font-size: 16px;
+    opacity: 0.8;
+  }
+  
+  /* Responsive */
+  @media (max-width: 600px) {
+    .notifications-container {
+      padding: 15px;
+    }
+  
+    .header h1 {
+      font-size: 22px;
+    }
+  
+    .tabs {
+      flex-direction: column;
+    }
+  
+    .request-details {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .arrow {
+      transform: rotate(90deg);
+    }
+  }
