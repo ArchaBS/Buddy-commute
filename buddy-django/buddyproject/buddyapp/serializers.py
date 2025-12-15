@@ -31,6 +31,7 @@ class Rideresponseserializer(serializers.ModelSerializer):
         fields="__all__"
 
 class Notificationserializer(serializers.ModelSerializer):
+    ride_request_id = serializers.IntegerField(source='ride_request.id', read_only=True, allow_null=True)
     class Meta:
         model=Notification
         fields="__all__"

@@ -751,12 +751,14 @@ def accept_ride_request(request, request_id):
                 cancelled_count += 1
             
             # Notify requester
+            # Create notification for the original requester with ride ID
             requester = ride_request.requester
             Notification.objects.create(
-                receiver=requester,
-                message=f"🎉 {responder.username} accepted your ride request from {ride_request.pickup_location} to {ride_request.destination}",
-                is_read=False
-            )
+                 receiver=requester,
+                 message=f"🎉 {responder.username} accepted your ride request from {ride_request.pickup_location} to {ride_request.destination}|RIDE:{ride_request.id}",
+                 is_read=False,
+                 ride_request=ride_request,
+                )
             
             print(f"✓ Request accepted. Status changed to in_progress. Notified {cancelled_count + 1} users")
             

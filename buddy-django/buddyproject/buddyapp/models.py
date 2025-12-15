@@ -50,6 +50,7 @@ class Notification(models.Model):
     message=models.CharField(max_length=100)
     is_read=models.BooleanField(default=False)
     created_at=models.DateTimeField(auto_now_add=True)
+    ride_request=models.ForeignKey(Riderequest,on_delete=models.CASCADE,null=True,blank=True,related_name='notifications')
 
 class Location(models.Model):
     user=models.ForeignKey(Riderequest,on_delete=models.CASCADE,related_name='location')

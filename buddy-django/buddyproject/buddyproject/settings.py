@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-qih8m24irab!3=1mv6m4i938o(6nn@$^9bcd+mc&4c5$@rvc30
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.235.142', '*']
 
 
 # Application definition
@@ -128,3 +128,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ORIGIN_ALLOW_ALL= True
 CORS_ALLOW_ALL_HEADERS=True
+
+import os
+
+# Static files configuration for deployment
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Security settings for production
+if 'RAILWAY_ENVIRONMENT' in os.environ:
+    DEBUG = False
+    SECRET_KEY = os.environ.get('SECRET_KEY', SECRET_KEY)
