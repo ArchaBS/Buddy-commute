@@ -1,0 +1,8 @@
+[phases.setup]
+nixPkgs = ["python313", "postgresql"]
+
+[phases.install]
+cmds = ["pip install -r requirements.txt"]
+
+[start]
+cmd = "gunicorn buddyproject.wsgi:application --bind 0.0.0.0:$PORT"
