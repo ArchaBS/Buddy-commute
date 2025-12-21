@@ -1,69 +1,89 @@
 <div class="tracking-container">
   
-    <!-- Header -->
-    <div class="header">
-      <button class="back-btn" (click)="goBack()">
-        <i class="bi bi-arrow-left"></i>
+  <!-- Header -->
+  <div class="header">
+    <button class="back-btn" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i> Back
+    </button>
+    <h1>Live Tracking</h1>
+    
+    <div style="display: flex; gap: 10px;">
+      <!-- Test Mode Toggle Button -->
+      <button 
+        class="test-mode-btn" 
+        (click)="toggleTestMode()"
+        [style.background]="isTestMode ? '#f59e0b' : '#6b7280'"
+        style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; color: white; font-weight: 600;">
+        {{ isTestMode ? '🧪 Test Mode ON' : '🧪 Test Mode' }}
       </button>
-      <h1>Live Tracking</h1>
-      <button class="cancel-btn" (click)="cancelRide()" [disabled]="isCancelling">
-        <i class="bi bi-x-circle"></i> {{ isCancelling ? 'Cancelling...' : 'Cancel Ride' }}
-      </button>
-    </div>
-  
-    <!-- Loading State -->
-    <div class="loading" *ngIf="isLoading">
-      <div class="spinner"></div>
-      <p>Loading ride details...</p>
-    </div>
-  
-    <!-- Main Content -->
-    <div class="content" *ngIf="!isLoading && rideData">
       
-      <!-- Ride Info Card -->
-      <div class="info-card">
-        <div class="info-row">
-          <div class="info-item">
-            <span class="label">🚗 Riding with</span>
-            <span class="value">{{ getOtherUserName() }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">⏱️ ETA</span>
-            <span class="value">{{ estimatedTime }}</span>
-          </div>
-          <div class="info-item">
-            <span class="label">📏 Distance</span>
-            <span class="value">{{ distance }}</span>
-          </div>
-        </div>
-        
-        <div class="route-info">
-          <div class="location">
-            <i class="bi bi-geo-alt-fill"></i>
-            <span>{{ rideData.pickup_location }}</span>
-          </div>
-          <div class="arrow">→</div>
-          <div class="location">
-            <i class="bi bi-flag-fill"></i>
-            <span>{{ rideData.destination }}</span>
-          </div>
-        </div>
-      </div>
-  
-      <!-- Map Container -->
-      <div id="map" class="map-container"></div>
-  
-      <!-- Status Info -->
-      <div class="status-info">
-        <div class="status-badge" [ngClass]="rideData.status">
-          <i class="bi bi-circle-fill"></i>
-          {{ rideData.status === 'in_progress' ? 'Ride in Progress' : rideData.status }}
-        </div>
-        <p class="status-text">
-          {{ isRequester() ? 'Your driver is on the way!' : 'Heading to pick up passenger' }}
-        </p>
-      </div>
-  
+      <button class="cancel-btn" (click)="cancelRide()" [disabled]="isCancelling">
+        <i class="bi bi-x-circle"></i> {{ isCancelling ? 'Cancelling...' : 'Cancel' }}
+      </button>
     </div>
-  
   </div>
+
+  <!-- Test Mode Info Banner -->
+  <div *ngIf="isTestMode" style="background: #fef3c7; border: 2px solid #f59e0b; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+    <strong>🧪 TEST MODE ACTIVE</strong><br>
+    <small>Simulating movement. Turn off to use real GPS.</small>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading ride details...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading && rideData">
+    
+    <!-- Ride Info Card -->
+    <div class="info-card">
+      <div class="info-row">
+        <div class="info-item">
+          <span class="label">🚗 Riding with</span>
+          <span class="value">{{ getOtherUserName() }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">⏱️ ETA</span>
+          <span class="value">{{ estimatedTime }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">📏 Distance</span>
+          <span class="value">{{ distance }}</span>
+        </div>
+      </div>
+      
+      <div class="route-info">
+        <div class="location">
+          <i class="bi bi-geo-alt-fill"></i>
+          <span>{{ rideData.pickup_location }}</span>
+        </div>
+        <div class="arrow">→</div>
+        <div class="location">
+          <i class="bi bi-flag-fill"></i>
+          <span>{{ rideData.destination }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map Container -->
+    <div style="height: 500px; width: 100%; background: white; border-radius: 12px; margin: 20px 0;">
+      <div id="map" style="height: 100%; width: 100%;"></div>
+    </div>
+
+    <!-- Status Info -->
+    <div class="status-info">
+      <div class="status-badge" [ngClass]="rideData.status">
+        <i class="bi bi-circle-fill"></i>
+        {{ rideData.status === 'in_progress' ? 'Ride in Progress' : rideData.status }}
+      </div>
+      <p class="status-text">
+        {{ isRequester() ? 'Your driver is on the way!' : 'Heading to pick up passenger' }}
+      </p>
+    </div>
+
+  </div>
+
+</div>

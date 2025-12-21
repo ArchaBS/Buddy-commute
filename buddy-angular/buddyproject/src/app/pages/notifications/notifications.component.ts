@@ -121,6 +121,7 @@ export class NotificationsComponent implements OnInit {
         responder_id: currentUser.id
       };
   
+      // ✅ CORRECT: Call acceptRideRequest, not getUserNotifications!
       this.notificationService.acceptRideRequest(request.id, data).subscribe({
         next: (response) => {
           console.log('✅ Request accepted:', response);
@@ -138,7 +139,6 @@ export class NotificationsComponent implements OnInit {
       });
     }
   }
-
   declineRequest(request: any): void {
     const currentUser = this.authService.getCurrentUser();
     
@@ -190,4 +190,22 @@ export class NotificationsComponent implements OnInit {
   goBack(): void {
     this.router.navigate(['/home']);
   }
+  viewRide(rideId: number | null, event: Event): void {
+    if (!rideId) return;
+    
+    // Prevent the click from bubbling up to mark as read
+    event.stopPropagation();
+    
+    console.log('🚗 Navigating to ride tracking:', rideId);
+    
+    // Navigate to tracking page
+    this.router.navigate(['/ride-tracking', rideId]);
+  }
+  getRideIdFromMessage(message: string): number | null {
+    const match = message.match(/\|RIDE:(\d+)/);
+    return match ? parseInt(match[1]) : null;
+  }
+  
 }
+
+

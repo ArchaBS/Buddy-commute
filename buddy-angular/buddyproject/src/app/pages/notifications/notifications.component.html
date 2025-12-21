@@ -1,139 +1,149 @@
 <div class="notifications-container">
   
-    <!-- Header -->
-    <div class="header">
-      <button class="back-btn" (click)="goBack()">
-        <i class="bi bi-arrow-left"></i> Back
-      </button>
-      <h1>Notifications</h1>
-      <span class="badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
-    </div>
-  
-    <!-- Tabs -->
-    <div class="tabs">
-      <button 
-        class="tab"
-        [class.active]="activeTab === 'notifications'"
-        (click)="switchTab('notifications')"
-      >
-        <i class="bi bi-bell"></i>
-        Messages ({{ unreadCount }})
-      </button>
-      <button 
-        class="tab"
-        [class.active]="activeTab === 'requests'"
-        (click)="switchTab('requests')"
-      >
-        <i class="bi bi-car-front"></i>
-        Ride Requests ({{ rideRequests.length }})
-      </button>
-    </div>
-  
-    <!-- NOTIFICATIONS TAB -->
-    <div class="tab-content" *ngIf="activeTab === 'notifications'">
-      
-      <!-- Loading -->
-      <div class="loading" *ngIf="isLoading">
-        <div class="spinner"></div>
-        <p>Loading notifications...</p>
-      </div>
-  
-      <!-- Notifications List -->
-      <div class="notifications-list" *ngIf="!isLoading && notifications.length > 0">
-        <div 
-          class="notification-card" 
-          *ngFor="let notif of notifications"
-          [class.unread]="!notif.is_read"
-          (click)="markAsRead(notif)"
-        >
-          <div class="notif-icon">
-            <i class="bi bi-bell-fill" *ngIf="!notif.is_read"></i>
-            <i class="bi bi-bell" *ngIf="notif.is_read"></i>
-          </div>
-          <div class="notif-content">
-            <p class="notif-message">{{ notif.message }}</p>
-            <span class="notif-time">{{ formatTime(notif.created_at) }}</span>
-          </div>
-          <div class="notif-indicator" *ngIf="!notif.is_read"></div>
-        </div>
-      </div>
-  
-      <!-- Empty State -->
-      <div class="empty-state" *ngIf="!isLoading && notifications.length === 0">
-        <i class="bi bi-bell-slash"></i>
-        <h3>No Notifications</h3>
-        <p>You don't have any notifications yet</p>
-      </div>
-    </div>
-  
-    <!-- RIDE REQUESTS TAB -->
-    <div class="tab-content" *ngIf="activeTab === 'requests'">
-      
-      <!-- Loading -->
-      <div class="loading" *ngIf="isLoading">
-        <div class="spinner"></div>
-        <p>Loading ride requests...</p>
-      </div>
-  
-      <!-- Ride Requests List -->
-      <div class="requests-list" *ngIf="!isLoading && rideRequests.length > 0">
-        <div 
-          class="request-card" 
-          *ngFor="let request of rideRequests"
-        >
-          <div class="request-header">
-            <div class="requester-avatar">
-              {{ request.requester.charAt(0).toUpperCase() }}
-            </div>
-            <div class="requester-info">
-              <h3>{{ request.requester }}</h3>
-              <span class="request-time">{{ formatTime(request.created_at) }}</span>
-            </div>
-          </div>
-  
-          <div class="request-details">
-            <div class="detail-item">
-              <i class="bi bi-geo-alt-fill"></i>
-              <span>{{ request.pickup_location }}</span>
-            </div>
-            <div class="arrow">→</div>
-            <div class="detail-item">
-              <i class="bi bi-flag-fill"></i>
-              <span>{{ request.destination }}</span>
-            </div>
-          </div>
-  
-          <div class="request-actions" *ngIf="!request.already_responded">
-            <button 
-              class="btn-accept" 
-              (click)="acceptRequest(request)"
-              [disabled]="isAccepting"
-            >
-              <i class="bi bi-check-circle"></i>
-              Accept
-            </button>
-            <button 
-              class="btn-decline" 
-              (click)="declineRequest(request)"
-            >
-              <i class="bi bi-x-circle"></i>
-              Decline
-            </button>
-          </div>
-  
-          <div class="already-responded" *ngIf="request.already_responded">
-            <i class="bi bi-check-circle-fill"></i>
-            You already responded to this request
-          </div>
-        </div>
-      </div>
-  
-      <!-- Empty State -->
-      <div class="empty-state" *ngIf="!isLoading && rideRequests.length === 0">
-        <i class="bi bi-car-front"></i>
-        <h3>No Ride Requests</h3>
-        <p>No one has requested a ride yet</p>
-      </div>
-    </div>
-  
+  <!-- Header -->
+  <div class="header">
+    <button class="back-btn" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i> Back
+    </button>
+    <h1>Notifications</h1>
+    <span class="badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
   </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button 
+      class="tab"
+      [class.active]="activeTab === 'notifications'"
+      (click)="switchTab('notifications')"
+    >
+      <i class="bi bi-bell"></i>
+      Messages ({{ unreadCount }})
+    </button>
+    <button 
+      class="tab"
+      [class.active]="activeTab === 'requests'"
+      (click)="switchTab('requests')"
+    >
+      <i class="bi bi-car-front"></i>
+      Ride Requests ({{ rideRequests.length }})
+    </button>
+  </div>
+
+  <!-- NOTIFICATIONS TAB -->
+  <div class="tab-content" *ngIf="activeTab === 'notifications'">
+    
+    <!-- Loading -->
+    <div class="loading" *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p>Loading notifications...</p>
+    </div>
+
+    <!-- Notifications List -->
+    <div class="notifications-list" *ngIf="!isLoading && notifications.length > 0">
+      <div 
+        class="notification-card" 
+        *ngFor="let notif of notifications"
+        [class.unread]="!notif.is_read"
+        (click)="markAsRead(notif)"
+      >
+        <div class="notif-icon">
+          <i class="bi bi-bell-fill" *ngIf="!notif.is_read"></i>
+          <i class="bi bi-bell" *ngIf="notif.is_read"></i>
+        </div>
+        <div class="notif-content">
+          <p class="notif-message">{{ notif.message }}</p>
+          <span class="notif-time">{{ formatTime(notif.created_at) }}</span>
+          
+          <!-- ✅ UPDATED: View Ride button - parse ride ID from message -->
+          <button 
+            *ngIf="getRideIdFromMessage(notif.message)" 
+            class="btn-view-ride"
+            (click)="viewRide(getRideIdFromMessage(notif.message), $event)"
+          >
+            <i class="bi bi-car-front"></i> View Ride
+          </button>
+          
+        </div>
+        <div class="notif-indicator" *ngIf="!notif.is_read"></div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading && notifications.length === 0">
+      <i class="bi bi-bell-slash"></i>
+      <h3>No Notifications</h3>
+      <p>You don't have any notifications yet</p>
+    </div>
+  </div>
+
+  <!-- RIDE REQUESTS TAB -->
+  <div class="tab-content" *ngIf="activeTab === 'requests'">
+    
+    <!-- Loading -->
+    <div class="loading" *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p>Loading ride requests...</p>
+    </div>
+
+    <!-- Ride Requests List -->
+    <div class="requests-list" *ngIf="!isLoading && rideRequests.length > 0">
+      <div 
+        class="request-card" 
+        *ngFor="let request of rideRequests"
+      >
+        <div class="request-header">
+          <div class="requester-avatar">
+            {{ request.requester.charAt(0).toUpperCase() }}
+          </div>
+          <div class="requester-info">
+            <h3>{{ request.requester }}</h3>
+            <span class="request-time">{{ formatTime(request.created_at) }}</span>
+          </div>
+        </div>
+
+        <div class="request-details">
+          <div class="detail-item">
+            <i class="bi bi-geo-alt-fill"></i>
+            <span>{{ request.pickup_location }}</span>
+          </div>
+          <div class="arrow">→</div>
+          <div class="detail-item">
+            <i class="bi bi-flag-fill"></i>
+            <span>{{ request.destination }}</span>
+          </div>
+        </div>
+
+        <div class="request-actions" *ngIf="!request.already_responded">
+          <button 
+            class="btn-accept" 
+            (click)="acceptRequest(request)"
+            [disabled]="isAccepting"
+          >
+            <i class="bi bi-check-circle"></i>
+            Accept
+          </button>
+          <button 
+            class="btn-decline" 
+            (click)="declineRequest(request)"
+          >
+            <i class="bi bi-x-circle"></i>
+            Decline
+          </button>
+        </div>
+
+        <div class="already-responded" *ngIf="request.already_responded">
+          <i class="bi bi-check-circle-fill"></i>
+          You already responded to this request
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading && rideRequests.length === 0">
+      <i class="bi bi-car-front"></i>
+      <h3>No Ride Requests</h3>
+      <p>No one has requested a ride yet</p>
+    </div>
+  </div>
+
+</div>

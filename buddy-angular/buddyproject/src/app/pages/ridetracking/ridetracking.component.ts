@@ -27,6 +27,12 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
   isLoading: boolean = true;
   isCancelling: boolean = false;
   
+  // Test mode properties
+  isTestMode: boolean = false;
+  simulatedLat: number = 10.0;
+  simulatedLng: number = 76.0;
+  private simulationInterval: any = null;
+  
   private locationUpdateInterval: Subscription | null = null;
   private watchPositionId: number | null = null;
 
@@ -64,7 +70,7 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
       this.startAutoRefresh();
     });
   }
-
+  
   ngOnDestroy(): void {
     // Clean up
     if (this.locationUpdateInterval) {
@@ -73,30 +79,68 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
     if (this.watchPositionId !== null) {
       navigator.geolocation.clearWatch(this.watchPositionId);
     }
+    this.stopLocationSimulation();
   }
 
   initMap(): void {
-    // Default center (will be updated when data loads)
-    this.map = L.map('map').setView([10.0, 76.0], 13);
+    const mapContainer = document.getElementById('map');
+    if (!mapContainer) {
+      console.error('Map container not found!');
+      return;
+    }
   
-    // Add tile layer (OpenStreetMap)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
-      maxZoom: 19
-    }).addTo(this.map);
+    mapContainer.style.height = '500px';
+    mapContainer.style.width = '100%';
   
-    // Fix for default marker icon issue in Leaflet
-    delete (L.Icon.Default.prototype as any)._getIconUrl;
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl: 'assets/marker-icon-2x.png',
-      iconUrl: 'assets/marker-icon.png',
-      shadowUrl: 'assets/marker-shadow.png',
+    if (this.map) {
+      this.map.remove();
+    }
+  
+    this.map = L.map('map', {
+      center: [10.0, 76.0],
+      zoom: 13
     });
   
-    // Force map to recalculate its size
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap'
+    }).addTo(this.map);
+  
+    const iconRetinaUrl = 'assets/marker-icon-2x.png';
+    const iconUrl = 'assets/marker-icon.png';
+    const shadowUrl = 'assets/marker-shadow.png';
+
+    const DefaultIcon = L.icon({
+      iconRetinaUrl,
+      iconUrl,
+      shadowUrl,
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      tooltipAnchor: [16, -28],
+      shadowSize: [41, 41]
+    });
+
+    L.Marker.prototype.options.icon = DefaultIcon;
+  
     setTimeout(() => {
-      this.map.invalidateSize();
-    }, 200);
+      if (this.map) {
+        this.map.invalidateSize(true);
+        console.log('🗺️ Map resized');
+      }
+    }, 100);
+  
+    setTimeout(() => {
+      if (this.map) {
+        this.map.invalidateSize(true);
+      }
+    }, 500);
+  
+    setTimeout(() => {
+      if (this.map) {
+        this.map.invalidateSize(true);
+      }
+    }, 1000);
   
     console.log('🗺️ Map initialized');
   }
@@ -108,18 +152,13 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
         this.rideData = response;
         this.isLoading = false;
         
-        // Only initialize map if it doesn't exist yet
-        if (!this.map) {
-          setTimeout(() => {
+        setTimeout(() => {
+          if (!this.map) {
             this.initMap();
-            this.updateMapMarkers();
-            this.calculateDistanceAndTime();
-          }, 100);
-        } else {
-          // Map already exists, just update markers
+          }
           this.updateMapMarkers();
           this.calculateDistanceAndTime();
-        }
+        }, 500);
       },
       error: (error) => {
         console.error('❌ Error loading ride data:', error);
@@ -131,10 +170,10 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
 
   updateMapMarkers(): void {
     if (!this.rideData) return;
-
+  
     const requester = this.rideData.requester;
     const accepter = this.rideData.accepter;
-
+  
     // Requester marker (blue)
     if (requester.latitude && requester.longitude) {
       const requesterIcon = L.divIcon({
@@ -142,7 +181,7 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
         html: `<div style="background-color: #3b82f6; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${requester.username.charAt(0).toUpperCase()}</div>`,
         iconSize: [30, 30]
       });
-
+  
       if (this.requesterMarker) {
         this.requesterMarker.setLatLng([requester.latitude, requester.longitude]);
       } else {
@@ -151,7 +190,7 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
           .bindPopup(`<b>${requester.username}</b><br>Requester`);
       }
     }
-
+  
     // Accepter marker (green)
     if (accepter && accepter.latitude && accepter.longitude) {
       const accepterIcon = L.divIcon({
@@ -159,7 +198,7 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
         html: `<div style="background-color: #10b981; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${accepter.username.charAt(0).toUpperCase()}</div>`,
         iconSize: [30, 30]
       });
-
+  
       if (this.accepterMarker) {
         this.accepterMarker.setLatLng([accepter.latitude, accepter.longitude]);
       } else {
@@ -168,16 +207,16 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
           .bindPopup(`<b>${accepter.username}</b><br>Driver`);
       }
     }
-
-    // Fit map to show all markers
+  
     this.fitMapToMarkers();
     
-    // ✅ ADDED: Force map to resize after updating markers
-    setTimeout(() => {
-      if (this.map) {
-        this.map.invalidateSize();
-      }
-    }, 100);
+    for (let i = 0; i < 5; i++) {
+      setTimeout(() => {
+        if (this.map) {
+          this.map.invalidateSize();
+        }
+      }, i * 200);
+    }
   }
 
   fitMapToMarkers(): void {
@@ -192,12 +231,20 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
   }
 
   calculateDistanceAndTime(): void {
+    console.log('🧮 Calculating distance...');
+    console.log('👤 Requester data:', this.rideData?.requester);
+    console.log('🚗 Accepter data:', this.rideData?.accepter);
+    
     const requester = this.rideData?.requester;
     const accepter = this.rideData?.accepter;
+    
+    console.log('📍 Requester location:', requester?.latitude, requester?.longitude);
+    console.log('📍 Accepter location:', accepter?.latitude, accepter?.longitude);
 
     if (!requester?.latitude || !accepter?.latitude) {
       this.estimatedTime = 'Waiting for location...';
       this.distance = 'Waiting for location...';
+      console.log('❌ Missing location data!');
       return;
     }
 
@@ -218,6 +265,8 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
     // Estimate time (assuming average speed of 40 km/h)
     const estimatedMinutes = Math.round((distanceKm / 40) * 60);
     this.estimatedTime = `${estimatedMinutes} min`;
+    
+    console.log('✅ Distance calculated:', this.distance, 'ETA:', this.estimatedTime);
   }
 
   toRad(degrees: number): number {
@@ -227,6 +276,7 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
   startLocationTracking(): void {
     if ('geolocation' in navigator) {
       console.log('📍 Starting location tracking...');
+      alert('Starting location tracking...'); // Debug alert
       
       this.watchPositionId = navigator.geolocation.watchPosition(
         (position) => {
@@ -234,6 +284,7 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
           const longitude = position.coords.longitude;
           
           console.log(`📍 Current location: ${latitude}, ${longitude}`);
+          alert(`Location captured: ${latitude}, ${longitude}`); // Debug alert
           
           // Send location to backend
           this.notificationService.updateRideLocation(this.rideId, {
@@ -243,15 +294,17 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
           }).subscribe({
             next: () => {
               console.log('✅ Location updated on server');
+              alert('Location sent to server!'); // Debug alert
             },
             error: (error) => {
               console.error('❌ Error updating location:', error);
+              alert('Error sending location: ' + error.message); // Debug alert
             }
           });
         },
         (error) => {
           console.error('❌ Geolocation error:', error);
-          alert('Please enable location services to use tracking');
+          alert('Geolocation error: ' + error.message); // Debug alert
         },
         {
           enableHighAccuracy: true,
@@ -270,6 +323,84 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
       console.log('🔄 Refreshing ride data...');
       this.loadRideData();
     });
+  }
+
+  // Test Mode Methods
+  toggleTestMode(): void {
+    this.isTestMode = !this.isTestMode;
+    
+    if (this.isTestMode) {
+      console.log('🧪 TEST MODE ENABLED - Simulating movement');
+      alert('Test mode enabled! Simulating movement.');
+      this.startLocationSimulation();
+    } else {
+      console.log('✅ TEST MODE DISABLED - Using real GPS');
+      this.stopLocationSimulation();
+      this.startLocationTracking();
+    }
+  }
+
+  startLocationSimulation(): void {
+    // Stop real location tracking
+    if (this.watchPositionId !== null) {
+      navigator.geolocation.clearWatch(this.watchPositionId);
+      this.watchPositionId = null;
+    }
+
+    // Get initial position from ride data
+    if (this.rideData?.accepter) {
+      this.simulatedLat = this.rideData.accepter.latitude || 10.0;
+      this.simulatedLng = this.rideData.accepter.longitude || 76.0;
+    }
+
+    // Simulate movement every 3 seconds
+    this.simulationInterval = setInterval(() => {
+      const latChange = (Math.random() - 0.5) * 0.002;
+      const lngChange = (Math.random() - 0.5) * 0.002;
+      
+      // Bias movement toward the requester
+      if (this.rideData?.requester) {
+        const targetLat = this.rideData.requester.latitude;
+        const targetLng = this.rideData.requester.longitude;
+        
+        if (targetLat && targetLng) {
+          const toTargetLat = (targetLat - this.simulatedLat) * 0.1;
+          const toTargetLng = (targetLng - this.simulatedLng) * 0.1;
+          
+          this.simulatedLat += toTargetLat + latChange;
+          this.simulatedLng += toTargetLng + lngChange;
+        } else {
+          this.simulatedLat += latChange;
+          this.simulatedLng += lngChange;
+        }
+      } else {
+        this.simulatedLat += latChange;
+        this.simulatedLng += lngChange;
+      }
+
+      console.log(`🧪 Simulated location: ${this.simulatedLat}, ${this.simulatedLng}`);
+
+      // Send simulated location to backend
+      this.notificationService.updateRideLocation(this.rideId, {
+        user_id: this.currentUser.id,
+        latitude: this.simulatedLat,
+        longitude: this.simulatedLng
+      }).subscribe({
+        next: () => {
+          console.log('✅ Simulated location updated');
+        },
+        error: (error) => {
+          console.error('❌ Error updating simulated location:', error);
+        }
+      });
+    }, 3000);
+  }
+
+  stopLocationSimulation(): void {
+    if (this.simulationInterval) {
+      clearInterval(this.simulationInterval);
+      this.simulationInterval = null;
+    }
   }
 
   cancelRide(): void {

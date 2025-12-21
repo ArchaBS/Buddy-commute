@@ -366,3 +366,28 @@
       transform: rotate(90deg);
     }
   }
+
+  .btn-view-ride {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .btn-view-ride:hover {
+    background: #4f46e5;
+    transform: translateY(-2px);
+  }
+  
+  .btn-view-ride i {
+    font-size: 16px;
+  }
