@@ -97,3 +97,40 @@
   background: #dcfce7;
   color: #16a34a;
 }
+
+/* Animated route line */
+@keyframes dash {
+  to {
+    stroke-dashoffset: -1000;
+  }
+}
+
+.route-line-animated {
+  animation: dash 30s linear infinite;
+}
+.leaflet-pane {
+  z-index: 400 !important;
+}
+
+.leaflet-overlay-pane {
+  z-index: 400 !important;
+}
+
+.leaflet-overlay-pane svg {
+  z-index: 400 !important;
+}
+/* Make sure the line layer is visible */
+::ng-deep .leaflet-overlay-pane {
+  z-index: 400 !important;
+}
+
+::ng-deep .route-line {
+  pointer-events: none;
+  z-index: 400 !important;
+}
+
+/* Make markers stand out */
+::ng-deep .custom-marker-requester,
+::ng-deep .custom-marker-accepter {
+  z-index: 1000 !important;
+}

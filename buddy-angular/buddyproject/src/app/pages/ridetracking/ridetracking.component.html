@@ -7,26 +7,9 @@
     </button>
     <h1>Live Tracking</h1>
     
-    <div style="display: flex; gap: 10px;">
-      <!-- Test Mode Toggle Button -->
-      <button 
-        class="test-mode-btn" 
-        (click)="toggleTestMode()"
-        [style.background]="isTestMode ? '#f59e0b' : '#6b7280'"
-        style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; color: white; font-weight: 600;">
-        {{ isTestMode ? '🧪 Test Mode ON' : '🧪 Test Mode' }}
-      </button>
-      
-      <button class="cancel-btn" (click)="cancelRide()" [disabled]="isCancelling">
-        <i class="bi bi-x-circle"></i> {{ isCancelling ? 'Cancelling...' : 'Cancel' }}
-      </button>
-    </div>
-  </div>
-
-  <!-- Test Mode Info Banner -->
-  <div *ngIf="isTestMode" style="background: #fef3c7; border: 2px solid #f59e0b; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
-    <strong>🧪 TEST MODE ACTIVE</strong><br>
-    <small>Simulating movement. Turn off to use real GPS.</small>
+    <button class="cancel-btn" (click)="cancelRide()" [disabled]="isCancelling">
+      <i class="bi bi-x-circle"></i> {{ isCancelling ? 'Cancelling...' : 'Cancel' }}
+    </button>
   </div>
 
   <!-- Loading State -->

@@ -4,7 +4,7 @@ import { LogoComponent } from './pages/logo/logo.component';
 import { LoginComponent } from './pages/login/login.component';
 import { SignupComponent } from './pages/signup/signup.component';
 import { HomeComponent } from './pages/homes/homes.component';
-import { RiderequestComponent } from './pages/riderequest/riderequest.component';
+//import { RiderequestComponent } from './pages/riderequest/riderequest.component';
 import { GroupComponent } from './pages/group/group.component';
 import { GroupviewComponent } from './pages/groupview/groupview.component';
 import { SendriderequestComponent } from './pages/sendriderequest/sendriderequest.component';
@@ -18,7 +18,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'riderequest', component: RiderequestComponent }, 
+  //{ path: 'riderequest', component: RiderequestComponent }, 
   { path: 'group', component: GroupComponent }, 
   { path: 'groupview/:id', component: GroupviewComponent },
   { path: 'sendriderequest/:id', component: SendriderequestComponent },

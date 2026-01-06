@@ -29,14 +29,6 @@ export class GroupComponent implements OnInit {
   ngOnInit() {
     console.log('ngOnInit called');
     
-    // Get query parameters
-    this.route.queryParams.subscribe(params => {
-      this.pickup = params['pickup'] || '';
-      this.destination = params['destination'] || '';
-      console.log('Pickup:', this.pickup);
-      console.log('Destination:', this.destination);
-    });
-    
     // Load real groups from backend
     this.loadGroups();
     this.autoJoinGroups();
@@ -180,7 +172,7 @@ export class GroupComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/riderequest']);
+    this.router.navigate(['/home']);
   }
 
   goToHome() {

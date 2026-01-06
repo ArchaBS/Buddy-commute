@@ -18,21 +18,18 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
   
   requesterMarker: any;
   accepterMarker: any;
-  pickupMarker: any;
-  destinationMarker: any;
+  routeLine: any = null;
   
   estimatedTime: string = 'Calculating...';
   distance: string = 'Calculating...';
   
   isLoading: boolean = true;
   isCancelling: boolean = false;
-  
-  // Test mode properties
   isTestMode: boolean = false;
   simulatedLat: number = 10.0;
   simulatedLng: number = 76.0;
-  private simulationInterval: any = null;
   
+  private simulationInterval: any = null;
   private locationUpdateInterval: Subscription | null = null;
   private watchPositionId: number | null = null;
 
@@ -44,27 +41,16 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    console.log('🔔 Ride Tracking component loaded');
-    console.log('🔍 Getting current user...');
-    
     this.currentUser = this.authService.getCurrentUser();
     
-    console.log('👤 Current user:', this.currentUser);
-    
     if (!this.currentUser) {
-      console.log('❌ No user found, redirecting to login');
       alert('Please login first');
       this.router.navigate(['/login']);
       return;
     }
-    
-    console.log('✅ User found, continuing...');
   
-    // Get ride ID from route
     this.route.params.subscribe(params => {
       this.rideId = +params['id'];
-      console.log('🚗 Tracking ride:', this.rideId);
-      
       this.loadRideData();
       this.startLocationTracking();
       this.startAutoRefresh();
@@ -72,7 +58,6 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
   }
   
   ngOnDestroy(): void {
-    // Clean up
     if (this.locationUpdateInterval) {
       this.locationUpdateInterval.unsubscribe();
     }
@@ -85,7 +70,7 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
   initMap(): void {
     const mapContainer = document.getElementById('map');
     if (!mapContainer) {
-      console.error('Map container not found!');
+      console.error('❌ Map container not found!');
       return;
     }
   
@@ -96,9 +81,10 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
       this.map.remove();
     }
   
+    // Initialize map at center of India
     this.map = L.map('map', {
-      center: [10.0, 76.0],
-      zoom: 13
+      center: [10.5, 76.2],
+      zoom: 10
     });
   
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -106,49 +92,28 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
       attribution: '© OpenStreetMap'
     }).addTo(this.map);
   
-    const iconRetinaUrl = 'assets/marker-icon-2x.png';
-    const iconUrl = 'assets/marker-icon.png';
-    const shadowUrl = 'assets/marker-shadow.png';
-
     const DefaultIcon = L.icon({
-      iconRetinaUrl,
-      iconUrl,
-      shadowUrl,
+      iconRetinaUrl: 'assets/marker-icon-2x.png',
+      iconUrl: 'assets/marker-icon.png',
+      shadowUrl: 'assets/marker-shadow.png',
       iconSize: [25, 41],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
-      tooltipAnchor: [16, -28],
       shadowSize: [41, 41]
     });
 
     L.Marker.prototype.options.icon = DefaultIcon;
   
     setTimeout(() => {
-      if (this.map) {
-        this.map.invalidateSize(true);
-        console.log('🗺️ Map resized');
-      }
+      this.map?.invalidateSize(true);
+      console.log('✅ Map initialized');
     }, 100);
-  
-    setTimeout(() => {
-      if (this.map) {
-        this.map.invalidateSize(true);
-      }
-    }, 500);
-  
-    setTimeout(() => {
-      if (this.map) {
-        this.map.invalidateSize(true);
-      }
-    }, 1000);
-  
-    console.log('🗺️ Map initialized');
   }
 
   loadRideData(): void {
     this.notificationService.getActiveRide(this.rideId).subscribe({
       next: (response) => {
-        console.log('✅ Ride data loaded:', response);
+        console.log('🔄 Ride data loaded:', response);
         this.rideData = response;
         this.isLoading = false;
         
@@ -156,117 +121,160 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
           if (!this.map) {
             this.initMap();
           }
-          this.updateMapMarkers();
-          this.calculateDistanceAndTime();
+          this.updateMapMarkersAndLine();
         }, 500);
       },
       error: (error) => {
-        console.error('❌ Error loading ride data:', error);
-        alert('Failed to load ride details');
+        console.error('❌ Error loading ride:', error);
         this.router.navigate(['/notifications']);
       }
     });
   }
 
-  updateMapMarkers(): void {
-    if (!this.rideData) return;
-  
-    const requester = this.rideData.requester;
-    const accepter = this.rideData.accepter;
-  
-    // Requester marker (blue)
-    if (requester.latitude && requester.longitude) {
-      const requesterIcon = L.divIcon({
-        className: 'custom-marker',
-        html: `<div style="background-color: #3b82f6; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${requester.username.charAt(0).toUpperCase()}</div>`,
-        iconSize: [30, 30]
-      });
-  
-      if (this.requesterMarker) {
-        this.requesterMarker.setLatLng([requester.latitude, requester.longitude]);
-      } else {
-        this.requesterMarker = L.marker([requester.latitude, requester.longitude], { icon: requesterIcon })
-          .addTo(this.map)
-          .bindPopup(`<b>${requester.username}</b><br>Requester`);
-      }
-    }
-  
-    // Accepter marker (green)
-    if (accepter && accepter.latitude && accepter.longitude) {
-      const accepterIcon = L.divIcon({
-        className: 'custom-marker',
-        html: `<div style="background-color: #10b981; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">${accepter.username.charAt(0).toUpperCase()}</div>`,
-        iconSize: [30, 30]
-      });
-  
-      if (this.accepterMarker) {
-        this.accepterMarker.setLatLng([accepter.latitude, accepter.longitude]);
-      } else {
-        this.accepterMarker = L.marker([accepter.latitude, accepter.longitude], { icon: accepterIcon })
-          .addTo(this.map)
-          .bindPopup(`<b>${accepter.username}</b><br>Driver`);
-      }
-    }
-  
-    this.fitMapToMarkers();
-    
-    for (let i = 0; i < 5; i++) {
-      setTimeout(() => {
-        if (this.map) {
-          this.map.invalidateSize();
-        }
-      }, i * 200);
-    }
-  }
-
-  fitMapToMarkers(): void {
-    const bounds = L.latLngBounds([]);
-    
-    if (this.requesterMarker) bounds.extend(this.requesterMarker.getLatLng());
-    if (this.accepterMarker) bounds.extend(this.accepterMarker.getLatLng());
-    
-    if (bounds.isValid()) {
-      this.map.fitBounds(bounds, { padding: [50, 50] });
-    }
-  }
-
-  calculateDistanceAndTime(): void {
-    console.log('🧮 Calculating distance...');
-    console.log('👤 Requester data:', this.rideData?.requester);
-    console.log('🚗 Accepter data:', this.rideData?.accepter);
-    
-    const requester = this.rideData?.requester;
-    const accepter = this.rideData?.accepter;
-    
-    console.log('📍 Requester location:', requester?.latitude, requester?.longitude);
-    console.log('📍 Accepter location:', accepter?.latitude, accepter?.longitude);
-
-    if (!requester?.latitude || !accepter?.latitude) {
-      this.estimatedTime = 'Waiting for location...';
-      this.distance = 'Waiting for location...';
-      console.log('❌ Missing location data!');
+  updateMapMarkersAndLine(): void {
+    if (!this.rideData || !this.map) {
+      console.error('❌ No map or ride data');
       return;
     }
 
-    // Calculate distance using Haversine formula
+    const req = this.rideData.requester;
+    const acc = this.rideData.accepter;
+
+    console.log('📍 Updating markers:', {
+      requester: req ? `${req.username} at [${req.latitude}, ${req.longitude}]` : 'missing',
+      accepter: acc ? `${acc.username} at [${acc.latitude}, ${acc.longitude}]` : 'missing'
+    });
+
+    // Create/update requester marker (Blue - Passenger)
+    if (req?.latitude && req?.longitude) {
+      const icon = L.divIcon({
+        className: 'custom-marker-requester',
+        html: `<div style="background-color: #3b82f6; width: 35px; height: 35px; border-radius: 50%; border: 3px solid white; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">${req.username.charAt(0).toUpperCase()}</div>`,
+        iconSize: [35, 35]
+      });
+
+      if (this.requesterMarker) {
+        this.requesterMarker.setLatLng([req.latitude, req.longitude]);
+      } else {
+        this.requesterMarker = L.marker([req.latitude, req.longitude], { icon })
+          .addTo(this.map)
+          .bindPopup(`<b>Pickup: ${req.username}</b>`);
+        console.log('✅ Created requester marker');
+      }
+    }
+
+    // Create/update accepter marker (Green - Driver)
+    if (acc?.latitude && acc?.longitude) {
+      const icon = L.divIcon({
+        className: 'custom-marker-accepter',
+        html: `<div style="background-color: #10b981; width: 35px; height: 35px; border-radius: 50%; border: 3px solid white; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">${acc.username.charAt(0).toUpperCase()}</div>`,
+        iconSize: [35, 35]
+      });
+
+      if (this.accepterMarker) {
+        const oldLatLng = this.accepterMarker.getLatLng();
+        const newLatLng = L.latLng(acc.latitude, acc.longitude);
+        this.animateMarker(this.accepterMarker, oldLatLng, newLatLng, 2000);
+      } else {
+        this.accepterMarker = L.marker([acc.latitude, acc.longitude], { icon })
+          .addTo(this.map)
+          .bindPopup(`<b>Driver: ${acc.username}</b>`);
+        console.log('✅ Created accepter marker');
+      }
+    }
+
+    // DRAW THE LINE - This is the critical part
+    if (req?.latitude && req?.longitude && acc?.latitude && acc?.longitude) {
+      console.log('🔴 Drawing line between:', {
+        from: [acc.latitude, acc.longitude],
+        to: [req.latitude, req.longitude]
+      });
+
+      // Remove old line if exists
+      if (this.routeLine) {
+        this.map.removeLayer(this.routeLine);
+      }
+
+      // Draw a BOLD, VISIBLE line
+      this.routeLine = L.polyline(
+        [
+          [acc.latitude, acc.longitude],
+          [req.latitude, req.longitude]
+        ],
+        {
+          color: '#ef4444',        // Bright red
+          weight: 8,               // Thick line
+          opacity: 0.9,
+          lineJoin: 'round',
+          lineCap: 'round',
+          dashArray: '15, 10',     // Dashed for visibility
+          className: 'route-line'
+        }
+      ).addTo(this.map);
+
+      console.log('✅✅✅ LINE DRAWN ON MAP!');
+
+      // Calculate distance
+      this.calculateDistance(req, acc);
+    } else {
+      console.warn('⚠️ Cannot draw line - missing coordinates');
+    }
+
+    // Fit map to show both markers and line
+    this.fitMapToShowRoute();
+  }
+
+  animateMarker(marker: any, startLatLng: L.LatLng, endLatLng: L.LatLng, duration: number): void {
+    const start = Date.now();
+    const animate = () => {
+      const elapsed = Date.now() - start;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      const lat = startLatLng.lat + (endLatLng.lat - startLatLng.lat) * progress;
+      const lng = startLatLng.lng + (endLatLng.lng - startLatLng.lng) * progress;
+      
+      marker.setLatLng([lat, lng]);
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+    animate();
+  }
+
+  calculateDistance(req: any, acc: any): void {
     const R = 6371; // Earth's radius in km
-    const dLat = this.toRad(accepter.latitude - requester.latitude);
-    const dLon = this.toRad(accepter.longitude - requester.longitude);
+    const dLat = this.toRad(acc.latitude - req.latitude);
+    const dLon = this.toRad(acc.longitude - req.longitude);
     
     const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-              Math.cos(this.toRad(requester.latitude)) * Math.cos(this.toRad(accepter.latitude)) *
+              Math.cos(this.toRad(req.latitude)) * Math.cos(this.toRad(acc.latitude)) *
               Math.sin(dLon / 2) * Math.sin(dLon / 2);
     
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distanceKm = R * c;
 
     this.distance = `${distanceKm.toFixed(1)} km`;
+    this.estimatedTime = `${Math.round((distanceKm / 40) * 60)} min`;
 
-    // Estimate time (assuming average speed of 40 km/h)
-    const estimatedMinutes = Math.round((distanceKm / 40) * 60);
-    this.estimatedTime = `${estimatedMinutes} min`;
-    
-    console.log('✅ Distance calculated:', this.distance, 'ETA:', this.estimatedTime);
+    console.log(`📏 Distance: ${this.distance}, ETA: ${this.estimatedTime}`);
+  }
+
+  fitMapToShowRoute(): void {
+    if (!this.requesterMarker || !this.accepterMarker) return;
+
+    const bounds = L.latLngBounds([
+      this.requesterMarker.getLatLng(),
+      this.accepterMarker.getLatLng()
+    ]);
+
+    this.map.fitBounds(bounds, { 
+      padding: [80, 80],
+      maxZoom: 14,
+      animate: true
+    });
+
+    console.log('🗺️ Map fitted to show route');
   }
 
   toRad(degrees: number): number {
@@ -274,125 +282,97 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
   }
 
   startLocationTracking(): void {
-    if ('geolocation' in navigator) {
-      console.log('📍 Starting location tracking...');
-      alert('Starting location tracking...'); // Debug alert
-      
-      this.watchPositionId = navigator.geolocation.watchPosition(
-        (position) => {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
-          
-          console.log(`📍 Current location: ${latitude}, ${longitude}`);
-          alert(`Location captured: ${latitude}, ${longitude}`); // Debug alert
-          
-          // Send location to backend
-          this.notificationService.updateRideLocation(this.rideId, {
-            user_id: this.currentUser.id,
-            latitude: latitude,
-            longitude: longitude
-          }).subscribe({
-            next: () => {
-              console.log('✅ Location updated on server');
-              alert('Location sent to server!'); // Debug alert
-            },
-            error: (error) => {
-              console.error('❌ Error updating location:', error);
-              alert('Error sending location: ' + error.message); // Debug alert
-            }
-          });
-        },
-        (error) => {
-          console.error('❌ Geolocation error:', error);
-          alert('Geolocation error: ' + error.message); // Debug alert
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0
-        }
-      );
-    } else {
-      alert('Geolocation is not supported by your browser');
+    if (!('geolocation' in navigator)) {
+      console.error('❌ Geolocation not supported');
+      return;
     }
+
+    console.log('📍 Starting real location tracking...');
+
+    this.watchPositionId = navigator.geolocation.watchPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        
+        console.log(`📍 Real location: ${lat}, ${lng}`);
+
+        this.notificationService.updateRideLocation(this.rideId, {
+          user_id: this.currentUser.id,
+          latitude: lat,
+          longitude: lng
+        }).subscribe({
+          next: () => console.log('✅ Location sent to server'),
+          error: (err) => console.error('❌ Failed to update location:', err)
+        });
+      },
+      (error) => {
+        console.error('❌ Geolocation error:', error);
+        alert('Could not get your location. Please enable location permissions.');
+      },
+      { 
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0 
+      }
+    );
   }
 
   startAutoRefresh(): void {
-    // Refresh ride data every 10 seconds
-    this.locationUpdateInterval = interval(10000).subscribe(() => {
-      console.log('🔄 Refreshing ride data...');
+    // Refresh every 5 seconds
+    this.locationUpdateInterval = interval(5000).subscribe(() => {
+      console.log('🔄 Auto-refreshing ride data...');
       this.loadRideData();
     });
   }
 
-  // Test Mode Methods
   toggleTestMode(): void {
     this.isTestMode = !this.isTestMode;
     
     if (this.isTestMode) {
-      console.log('🧪 TEST MODE ENABLED - Simulating movement');
-      alert('Test mode enabled! Simulating movement.');
+      console.log('🧪 Test mode ENABLED');
       this.startLocationSimulation();
     } else {
-      console.log('✅ TEST MODE DISABLED - Using real GPS');
+      console.log('📍 Test mode DISABLED - using real location');
       this.stopLocationSimulation();
       this.startLocationTracking();
     }
   }
 
   startLocationSimulation(): void {
-    // Stop real location tracking
+    // Stop real tracking
     if (this.watchPositionId !== null) {
       navigator.geolocation.clearWatch(this.watchPositionId);
       this.watchPositionId = null;
     }
 
-    // Get initial position from ride data
+    // Set initial simulated position
     if (this.rideData?.accepter) {
       this.simulatedLat = this.rideData.accepter.latitude || 10.0;
       this.simulatedLng = this.rideData.accepter.longitude || 76.0;
     }
 
-    // Simulate movement every 3 seconds
+    console.log('🧪 Simulation started at:', this.simulatedLat, this.simulatedLng);
+
+    // Move toward requester every 3 seconds
     this.simulationInterval = setInterval(() => {
-      const latChange = (Math.random() - 0.5) * 0.002;
-      const lngChange = (Math.random() - 0.5) * 0.002;
-      
-      // Bias movement toward the requester
       if (this.rideData?.requester) {
         const targetLat = this.rideData.requester.latitude;
         const targetLng = this.rideData.requester.longitude;
         
         if (targetLat && targetLng) {
-          const toTargetLat = (targetLat - this.simulatedLat) * 0.1;
-          const toTargetLng = (targetLng - this.simulatedLng) * 0.1;
-          
-          this.simulatedLat += toTargetLat + latChange;
-          this.simulatedLng += toTargetLng + lngChange;
-        } else {
-          this.simulatedLat += latChange;
-          this.simulatedLng += lngChange;
+          // Move 10% closer + small random movement
+          this.simulatedLat += (targetLat - this.simulatedLat) * 0.1 + (Math.random() - 0.5) * 0.001;
+          this.simulatedLng += (targetLng - this.simulatedLng) * 0.1 + (Math.random() - 0.5) * 0.001;
+
+          console.log('🧪 Simulated move to:', this.simulatedLat, this.simulatedLng);
+
+          this.notificationService.updateRideLocation(this.rideId, {
+            user_id: this.currentUser.id,
+            latitude: this.simulatedLat,
+            longitude: this.simulatedLng
+          }).subscribe();
         }
-      } else {
-        this.simulatedLat += latChange;
-        this.simulatedLng += lngChange;
       }
-
-      console.log(`🧪 Simulated location: ${this.simulatedLat}, ${this.simulatedLng}`);
-
-      // Send simulated location to backend
-      this.notificationService.updateRideLocation(this.rideId, {
-        user_id: this.currentUser.id,
-        latitude: this.simulatedLat,
-        longitude: this.simulatedLng
-      }).subscribe({
-        next: () => {
-          console.log('✅ Simulated location updated');
-        },
-        error: (error) => {
-          console.error('❌ Error updating simulated location:', error);
-        }
-      });
     }, 3000);
   }
 
@@ -400,27 +380,23 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
     if (this.simulationInterval) {
       clearInterval(this.simulationInterval);
       this.simulationInterval = null;
+      console.log('🧪 Simulation stopped');
     }
   }
 
   cancelRide(): void {
-    if (!confirm('Are you sure you want to cancel this ride?')) {
-      return;
-    }
-
+    if (!confirm('Are you sure you want to cancel this ride?')) return;
+    
     this.isCancelling = true;
-
     this.notificationService.cancelRide(this.rideId, {
       user_id: this.currentUser.id
     }).subscribe({
-      next: (response) => {
-        console.log('✅ Ride cancelled:', response);
-        alert('Ride cancelled successfully');
+      next: () => {
+        console.log('✅ Ride cancelled');
         this.router.navigate(['/home']);
       },
-      error: (error) => {
-        console.error('❌ Error cancelling ride:', error);
-        alert('Failed to cancel ride');
+      error: (err) => {
+        console.error('❌ Cancel failed:', err);
         this.isCancelling = false;
       }
     });
@@ -438,11 +414,8 @@ export class RideTrackingComponent implements OnInit, OnDestroy {
 
   getOtherUserName(): string {
     if (!this.rideData) return '';
-    
-    if (this.isRequester()) {
-      return this.rideData.accepter?.username || 'Driver';
-    } else {
-      return this.rideData.requester?.username || 'Passenger';
-    }
+    return this.isRequester() 
+      ? (this.rideData.accepter?.username || 'Driver')
+      : (this.rideData.requester?.username || 'Passenger');
   }
 }
